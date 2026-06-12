@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand colors */
+  --color-red-50: #FDECEC;
+  --color-red-100: #FBD5D6;
+  --color-red-500: #E8262A;
+  --color-red-600: #CE1F23;
+  --color-red-700: #A81A1D;
+  --color-red-900: #6E1113;
+
+  /* Warm neutrals */
+  --color-stone-50: #FAF7F2;
+  --color-stone-100: #F2EDE6;
+  --color-stone-200: #E5DDD2;
+  --color-stone-400: #A99E8E;
+  --color-stone-500: #7D7264;
+  --color-stone-600: #5C5346;
+  --color-stone-900: #161311;
+
+  /* Gold accent */
+  --color-gold-50: #F5E7D2;
+  --color-gold-500: #C68A3E;
+  --color-gold-600: #A8722E;
+  --color-gold-700: #855A24;
+
+  /* Semantic tokens (light) */
+  --color-background: #FAF7F2;
+  --color-foreground: #161311;
+  --color-card: #FFFFFF;
+  --color-primary: #E8262A;
+  --color-primary-600: #CE1F23;
+  --color-primary-foreground: #FFFFFF;
+  --color-accent: #C68A3E;
+  --color-muted: #F2EDE6;
+  --color-muted-foreground: #5C5346;
+  --color-border: #E5DDD2;
+  --color-ring: #E8262A;
+
+  /* Typography */
+  --font-display: "Fraunces", serif;
+  --font-sans: "Inter", sans-serif;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-md: 0 4px 16px rgba(22, 19, 17, 0.08);
+  --shadow-lg: 0 12px 32px rgba(22, 19, 17, 0.10);
+
+  /* Easing */
+  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dark mode overrides */
+.dark {
+  --color-background: #14110F;
+  --color-foreground: #FAF7F2;
+  --color-card: #1F1B17;
+  --color-primary: #F04B4E;
+  --color-muted: #2A251E;
+  --color-muted-foreground: #B0A595;
+  --color-border: #2A251E;
+  --color-ring: #F04B4E;
+}
+
+/* Base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-stone-100);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-stone-200);
+  border-radius: 3px;
+}
+
+/* Eyebrow utility */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-primary-600);
+}
+
+/* Display heading utility */
+.display-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 6vw, 5.25rem);
+  line-height: 1.02;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.875rem, 3vw, 2.5rem);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

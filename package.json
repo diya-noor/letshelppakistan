@@ -2,6 +2,7 @@
   "name": "lets-help-pakistan",
   "version": "0.1.0",
   "private": true,
+  "engines": { "node": ">=18" },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -29,7 +30,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "playwright": "^1.60.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

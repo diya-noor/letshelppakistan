@@ -26,8 +26,8 @@ export const hero = {
   },
   // PLACEHOLDER: Replace with a high-resolution photograph of the community (Unsplash license)
   image: {
-    src: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1920&q=85",
-    alt: "Community members gathering in Parachinar, Pakistan",
+    src: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=1920&q=85",
+    alt: "Community members joining hands — Let's Help Pakistan",
   },
 } as const;
 

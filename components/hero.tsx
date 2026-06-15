@@ -20,7 +20,7 @@ export function Hero() {
         className="absolute inset-0"
         initial={{ scale: prefersReduced ? 1 : 1.06 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* PLACEHOLDER: Replace with a high-quality photograph of the community */}
         <Image
@@ -29,34 +29,52 @@ export function Hero() {
           fill
           priority
           quality={90}
-          className="object-cover object-center"
+          // object-top on mobile keeps the focal centre visible in portrait
+          className="object-cover object-center md:object-center"
           sizes="100vw"
         />
-        {/* Gradient overlay */}
+
+        {/* Base dark wash — lifts contrast across the whole frame */}
+        <div className="absolute inset-0 bg-[#14110F]/40" />
+
+        {/* Main gradient — heavy at bottom where text lives */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(20,17,15,0.15) 0%, rgba(20,17,15,0) 40%, rgba(20,17,15,0.75) 100%)",
+              "linear-gradient(180deg, rgba(20,17,15,0) 20%, rgba(20,17,15,0.55) 55%, rgba(20,17,15,0.92) 100%)",
           }}
         />
-        {/* Top vignette for nav legibility */}
+
+        {/* Top vignette — keeps nav legible */}
         <div
-          className="absolute inset-x-0 top-0 h-32"
+          className="absolute inset-x-0 top-0 h-40"
           style={{
-            background: "linear-gradient(180deg, rgba(20,17,15,0.5) 0%, transparent 100%)",
+            background:
+              "linear-gradient(180deg, rgba(20,17,15,0.65) 0%, transparent 100%)",
           }}
+        />
+
+        {/* Side vignettes — stops text bleeding at wide viewports */}
+        <div
+          className="absolute inset-y-0 left-0 w-32 hidden lg:block"
+          style={{ background: "linear-gradient(90deg, rgba(20,17,15,0.35) 0%, transparent 100%)" }}
+        />
+        <div
+          className="absolute inset-y-0 right-0 w-32 hidden lg:block"
+          style={{ background: "linear-gradient(270deg, rgba(20,17,15,0.35) 0%, transparent 100%)" }}
         />
       </motion.div>
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-[1280px] px-6 md:px-12 w-full flex flex-col items-center text-center pt-24 pb-20">
+      <div className="relative z-10 mx-auto max-w-[1280px] px-6 md:px-12 w-full flex flex-col items-center text-center pt-28 pb-24">
+
         {/* Eyebrow */}
         <motion.p
-          initial={{ opacity: 0, y: prefersReduced ? 0 : 16 }}
+          initial={{ opacity: 0, y: prefersReduced ? 0 : 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-6 text-sm font-semibold uppercase tracking-[0.12em] text-white/80"
+          className="mb-5 text-[0.75rem] md:text-sm font-semibold uppercase tracking-[0.14em] text-white/75"
         >
           {brand.eyebrow}
         </motion.p>
@@ -65,38 +83,48 @@ export function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: prefersReduced ? 0 : 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="display-heading text-white max-w-4xl"
+          transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="display-heading text-white max-w-[17ch]"
+          style={{ textShadow: "0 2px 32px rgba(0,0,0,0.55)" }}
         >
           {hero.headline}
         </motion.h1>
 
+        {/* Divider accent */}
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-8 mb-7 w-12 h-0.5 bg-[var(--color-primary)] origin-left"
+        />
+
         {/* Subcopy */}
         <motion.p
-          initial={{ opacity: 0, y: prefersReduced ? 0 : 20 }}
+          initial={{ opacity: 0, y: prefersReduced ? 0 : 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 text-[1.125rem] leading-[1.7] text-white/85 max-w-2xl"
+          transition={{ duration: 0.7, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="text-[1rem] md:text-[1.125rem] leading-[1.75] text-white/80 max-w-[52ch]"
+          style={{ textShadow: "0 1px 12px rgba(0,0,0,0.4)" }}
         >
           {hero.subcopy}
         </motion.p>
 
         {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: prefersReduced ? 0 : 16 }}
+          initial={{ opacity: 0, y: prefersReduced ? 0 : 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 flex flex-wrap gap-4 justify-center"
+          transition={{ duration: 0.6, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-10 flex flex-col sm:flex-row gap-3 justify-center w-full sm:w-auto"
         >
           <Link
             href={hero.cta.primary.href}
-            className="inline-flex items-center h-12 px-8 rounded-full bg-[var(--color-primary)] text-white font-medium text-sm transition-all duration-200 hover:bg-[var(--color-primary-600)] hover:-translate-y-px shadow-[var(--shadow-lg)] focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+            className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-(--color-primary) text-white font-medium text-sm transition-all duration-200 hover:bg-(--color-primary-600) hover:-translate-y-px shadow-lg focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           >
             {hero.cta.primary.label}
           </Link>
           <Link
             href={hero.cta.secondary.href}
-            className="inline-flex items-center h-12 px-8 rounded-full border border-white/70 text-white font-medium text-sm backdrop-blur-sm transition-all duration-200 hover:bg-white/10 hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
+            className="inline-flex items-center justify-center h-12 px-8 rounded-full border border-white/60 text-white font-medium text-sm backdrop-blur-sm bg-white/5 transition-all duration-200 hover:bg-white/15 hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
           >
             {hero.cta.secondary.label}
           </Link>
@@ -107,15 +135,15 @@ export function Hero() {
       <motion.a
         href="#about"
         aria-label="Scroll to about section"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white transition-colors duration-200"
+        className="absolute bottom-7 left-1/2 -translate-x-1/2 text-white/50 hover:text-white/90 transition-colors duration-200"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 6, 0] }}
+        animate={{ opacity: 1, y: [0, 7, 0] }}
         transition={{
-          opacity: { delay: 1.2, duration: 0.6 },
-          y: { repeat: Infinity, duration: 2, ease: "easeInOut", delay: 1.5 },
+          opacity: { delay: 1.3, duration: 0.6 },
+          y: { repeat: Infinity, duration: 2.2, ease: "easeInOut", delay: 1.6 },
         }}
       >
-        <ChevronDown size={28} />
+        <ChevronDown size={26} strokeWidth={1.5} />
       </motion.a>
     </section>
   );

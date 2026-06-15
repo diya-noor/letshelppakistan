@@ -26,7 +26,7 @@ export const hero = {
   },
   // PLACEHOLDER: Replace with a high-resolution photograph of the community (Unsplash license)
   image: {
-    src: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920&q=85",
+    src: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1920&q=85",
     alt: "Children studying — Let's Help Pakistan education program",
   },
 } as const;

@@ -26,8 +26,8 @@ export const hero = {
   },
   // PLACEHOLDER: Replace with a high-resolution photograph of the community (Unsplash license)
   image: {
-    src: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=1920&q=85",
-    alt: "Community members joining hands — Let's Help Pakistan",
+    src: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920&q=85",
+    alt: "Children studying — Let's Help Pakistan education program",
   },
 } as const;
 

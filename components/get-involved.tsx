@@ -30,12 +30,12 @@ export function GetInvolved() {
                   <Link
                     key={opt.label}
                     href={opt.href}
-                    className="inline-flex flex-col items-center gap-1 px-8 py-4 rounded-2xl bg-white text-[var(--color-primary-600)] font-medium transition-all duration-200 hover:bg-[var(--color-stone-100)] hover:-translate-y-px shadow-[var(--shadow-lg)] min-w-[200px]"
+                    className="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-white text-[var(--color-primary-600)] font-semibold text-base transition-all duration-200 hover:bg-[var(--color-stone-100)] hover:-translate-y-px shadow-[var(--shadow-lg)]"
                   >
-                    <span className="font-semibold text-base">{opt.label}</span>
-                    <span className="text-xs text-[var(--color-stone-600)] max-w-[180px] text-center leading-tight">
-                      {opt.description}
-                    </span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                    </svg>
+                    {opt.label}
                   </Link>
                 );
               }

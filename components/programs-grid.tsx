@@ -39,8 +39,8 @@ export function ProgramsGrid() {
             const Icon = iconMap[program.icon];
             return (
               <StaggerItem key={program.id}>
-                <article className="group bg-(--color-card) border border-(--color-border) rounded-2xl p-8 h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-(--shadow-lg) cursor-default">
-                  <div className="w-12 h-12 rounded-xl bg-(--color-red-50) flex items-center justify-center mb-6 shrink-0">
+                <article className="group bg-(--color-card) border border-(--color-border) rounded-2xl p-8 h-full flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-(--shadow-lg) cursor-default border-t-4 border-t-(--color-primary)">
+                  <div className="w-12 h-12 rounded-xl bg-(--color-red-50) flex items-center justify-center mb-6 shrink-0 border border-(--color-red-100)">
                     {Icon && (
                       <Icon size={22} className="text-(--color-primary-600)" strokeWidth={1.5} />
                     )}
@@ -54,7 +54,7 @@ export function ProgramsGrid() {
                   <ul className="mt-auto space-y-1.5">
                     {program.items.map((item) => (
                       <li key={item} className="flex items-start gap-2 text-sm text-(--color-muted-foreground) leading-[1.6]">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-(--color-accent) shrink-0" />
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-(--color-primary) shrink-0" />
                         {item}
                       </li>
                     ))}

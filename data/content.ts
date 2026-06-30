@@ -5,8 +5,8 @@ export const brand = {
   name: "Let's Help Pakistan",
   tagline: "Serving Humanity – Building a Better Future",
   eyebrow: "A non-profit serving Parachinar for 15 years",
-  phone1: "092631116",
-  phone2: "03025722798",
+  phone1: "+92 926 311116",
+  phone2: "+92 302 5722798",
   location: "Parachinar, Pakistan",
 } as const;
 

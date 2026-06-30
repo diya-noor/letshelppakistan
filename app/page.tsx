@@ -9,6 +9,7 @@ import { CoreValues } from "@/components/core-values";
 import { GetInvolved } from "@/components/get-involved";
 import { Contact } from "@/components/contact";
 import { Footer } from "@/components/footer";
+import { WhatsAppButton } from "@/components/whatsapp-button";
 
 export default function HomePage() {
   return (
@@ -24,6 +25,7 @@ export default function HomePage() {
       <GetInvolved />
       <Contact />
       <Footer />
+      <WhatsAppButton />
     </main>
   );
 }

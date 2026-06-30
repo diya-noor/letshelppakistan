@@ -99,13 +99,14 @@ export function Contact() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-[var(--color-foreground)] mb-1.5">
-                    Phone
+                  <label htmlFor="subject" className="block text-sm font-medium text-[var(--color-foreground)] mb-1.5">
+                    Subject
                   </label>
                   <input
-                    id="phone"
-                    type="tel"
-                    placeholder="+92 300 0000000"
+                    id="subject"
+                    type="text"
+                    required
+                    placeholder="What is this about?"
                     className="w-full h-12 px-4 rounded-xl bg-[var(--color-muted)] border border-[var(--color-border)] text-[var(--color-foreground)] placeholder:text-[var(--color-stone-400)] text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] transition-shadow"
                   />
                 </div>

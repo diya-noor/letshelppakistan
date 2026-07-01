@@ -1,12 +1,27 @@
 "use client";
 
 export function WhatsAppButton() {
+  const phoneNumber = "923025722798";
+  
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      window.location.href = `whatsapp://send?phone=${phoneNumber}`;
+      e.preventDefault();
+      setTimeout(() => {
+        window.open(`https://wa.me/${phoneNumber}`, "_blank");
+      }, 2000);
+    }
+  };
+
   return (
     <a
-      href="https://wa.me/923025722798"
+      href={`https://wa.me/${phoneNumber}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
+      onClick={handleClick}
       className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-200"
     >
       <svg

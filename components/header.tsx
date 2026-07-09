@@ -81,7 +81,7 @@ export function Header() {
           {/* Donate button + mobile toggle */}
           <div className="flex items-center gap-3">
             <Link
-              href="#get-involved"
+              href="/get-involved"
               className="hidden sm:inline-flex items-center h-11 px-6 rounded-full bg-(--color-primary) text-white text-sm font-medium transition-all duration-200 hover:bg-(--color-primary-600) hover:-translate-y-px shadow-(--shadow-md) focus-visible:ring-2 focus-visible:ring-(--color-ring) focus-visible:ring-offset-2"
             >
               Donate
@@ -150,7 +150,7 @@ export function Header() {
               </nav>
               <div className="p-6 border-t border-(--color-border)">
                 <Link
-                  href="#get-involved"
+                  href="/get-involved"
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center justify-center w-full h-12 rounded-full bg-(--color-primary) text-white font-medium hover:bg-(--color-primary-600) transition-all duration-200"
                 >

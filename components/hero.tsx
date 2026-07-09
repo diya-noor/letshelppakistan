@@ -133,8 +133,8 @@ export function Hero() {
 
       {/* Scroll cue */}
       <motion.a
-        href="#about"
-        aria-label="Scroll to about section"
+        href="/about"
+        aria-label="Go to about section"
         className="absolute bottom-7 left-1/2 -translate-x-1/2 text-white/50 hover:text-white/90 transition-colors duration-200"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 7, 0] }}

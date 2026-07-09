@@ -1,15 +1,13 @@
-import { Hero } from "@/components/hero";
 import { IntroStrip } from "@/components/intro-strip";
-import { StatsBand } from "@/components/stats-band";
 import { VisionMission } from "@/components/vision-mission";
+import { CoreValues } from "@/components/core-values";
 
-export default function HomePage() {
+export default function AboutPage() {
   return (
     <>
-      <Hero />
       <IntroStrip />
-      <StatsBand />
       <VisionMission />
+      <CoreValues />
     </>
   );
 }

@@ -48,7 +48,7 @@ export function FeaturedInitiatives() {
                   </p>
                   <div className="mt-8">
                     <a
-                      href="#get-involved"
+                      href="/get-involved"
                       className="inline-flex items-center gap-2 text-sm font-semibold text-(--color-primary-600) hover:gap-3 transition-all duration-200"
                     >
                       Support this work

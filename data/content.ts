@@ -21,8 +21,8 @@ export const hero = {
   subcopy:
     "For fifteen years, Let's Help Pakistan has stood with underprivileged families in Parachinar — opening classrooms, clinics, and livelihoods for people the system left behind. We serve humanity without discrimination.",
   cta: {
-    primary: { label: "Donate now", href: "#get-involved" },
-    secondary: { label: "Become a volunteer", href: "#get-involved" },
+    primary: { label: "Donate now", href: "/get-involved" },
+    secondary: { label: "Become a volunteer", href: "/get-involved" },
   },
   // PLACEHOLDER: Replace with a high-resolution photograph of the community (Unsplash license)
   image: {
@@ -191,28 +191,28 @@ export const getInvolved = {
     {
       label: "Donate",
       description: "Fund education, healthcare, and livelihoods for families in need.",
-      href: "#contact",
+      href: "/contact",
       variant: "primary" as const,
     },
     {
       label: "Volunteer",
       description: "Bring your skills to communities that can put them to work.",
-      href: "#contact",
+      href: "/contact",
       variant: "secondary" as const,
     },
     {
       label: "Partner with us",
       description: "Organizations and businesses — let's multiply our impact together.",
-      href: "#contact",
+      href: "/contact",
       variant: "ghost" as const,
     },
   ],
 } as const;
 
 export const nav = [
-  { label: "About", href: "#about" },
-  { label: "Programs", href: "#programs" },
-  { label: "Impact", href: "#impact" },
-  { label: "Get Involved", href: "#get-involved" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/about" },
+  { label: "Programs", href: "/programs" },
+  { label: "Impact", href: "/impact" },
+  { label: "Get Involved", href: "/get-involved" },
+  { label: "Contact", href: "/contact" },
 ] as const;

@@ -123,7 +123,7 @@ export function Footer() {
             </ul>
 
             <Link
-              href="#get-involved"
+              href="/get-involved"
               className="inline-flex items-center mt-8 h-10 px-6 rounded-full bg-(--color-primary) text-white text-sm font-medium transition-all duration-200 hover:bg-(--color-primary-600) hover:-translate-y-px"
             >
               Donate

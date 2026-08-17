@@ -18,6 +18,7 @@ dist/
 
 # Debug
 npm-debug.log*
+.dev-server*.log
 
 # Temp / testing
 screenshots/

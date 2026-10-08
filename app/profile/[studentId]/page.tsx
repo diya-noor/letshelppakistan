@@ -12,6 +12,7 @@ import { DocumentUploadSlots, existingDocumentForSlot, type DocumentSlot, type S
 const groups = [
   { title: "Profile Photo", categories: [{ label: "Photo", types: ["profilePhoto", "photo"] }] },
   { title: "CNIC / B-Form", categories: [{ label: "Front", types: ["cnicFront", "cnic"] }, { label: "Back", types: ["cnicBack"] }] },
+  { title: "Income Certificate", categories: [{ label: "Income certificate", types: ["incomeCertificate", "income_certificate"] }] },
   { title: "Result Card", categories: [{ label: "Result card", types: ["resultCard", "result"] }] },
   { title: "Fee Voucher", categories: [{ label: "Fee voucher", types: ["feeVoucher"] }] },
   { title: "Bank Proof", categories: [{ label: "Cheque / account title", types: ["bankProof", "bank_details"] }] },
@@ -38,7 +39,7 @@ function StudentProfileContent() {
 
   async function upload(file: File) {
     if (file.size > 5 * 1024 * 1024) throw new Error(`${file.name} is over 5 MB`);
-    const url = await generateUploadUrl({});
+    const url = await generateUploadUrl({ studentId });
     const response = await fetch(url, { method: "POST", headers: { "Content-Type": file.type }, body: file });
     if (!response.ok) throw new Error(`Could not upload ${file.name}`);
     return (await response.json()).storageId as Id<"_storage">;
@@ -67,7 +68,7 @@ function StudentProfileContent() {
   if (!isAuthenticated || !me) return <State>Please sign in to view this profile.</State>;
   if (profileData === null) return <State>Unable to load the student profile. Please try again.</State>;
 
-  const { profile, documents, photoUrl, application } = profileData;
+  const { profile, documents, photoUrl, application, user } = profileData;
   const sections: { title: string; fields: [string, string | undefined][] }[] = [
     { title: "Personal information", fields: [["Full name", profile?.fullName], ["Father / guardian name", profile?.fatherName || profile?.guardianName], ["Date of birth", profile?.dateOfBirth]] },
     { title: "Contact", fields: [["Phone number", profile?.contactNumber], ["Email", profile?.email]] },
@@ -80,8 +81,8 @@ function StudentProfileContent() {
   return <main className="min-h-screen bg-stone-50 px-4 pb-16 pt-28"><div className="mx-auto max-w-5xl">
     <Link href={me.role === "admin" ? "/admin/scholarships" : "/scholarship"} className="text-sm font-semibold text-red-700">← Back</Link>
     <header className="mt-5 flex flex-col gap-5 rounded-2xl border border-stone-200 bg-white p-5 shadow-md sm:flex-row sm:items-center sm:p-8">
-      <div className="grid h-28 w-28 shrink-0 place-items-center overflow-hidden rounded-2xl bg-stone-100 text-stone-400">{photoUrl ? <img src={photoUrl} alt="Student profile" className="h-full w-full object-cover"/> : <UserRound size={54} aria-label="Profile placeholder"/>}</div>
-      <div className="min-w-0 flex-1"><p className="eyebrow">Student profile</p><div className="mt-1 flex flex-wrap items-center gap-3"><h1 className="font-display text-3xl font-semibold sm:text-4xl">{profile?.fullName || "Student"}</h1><Status value={application?.status}/></div><p className="mt-2 text-stone-600">{profile?.instituteName || "Not provided"}{profile?.program ? ` · ${profile.program}` : ""}</p></div>
+      <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-stone-100 text-stone-400">{photoUrl ? <img src={photoUrl} alt="Student profile" className="h-full w-full object-cover"/> : <UserRound size={48} aria-label="Profile placeholder"/>}</div>
+      <div className="min-w-0 flex-1"><p className="eyebrow">Student profile</p><div className="mt-1 flex flex-wrap items-center gap-2"><h1 className="font-display text-3xl font-semibold sm:text-4xl">{profile?.fullName || "Student"}</h1><span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-bold text-violet-700">{user?.accountType === "admin_added" || !user?.authUserId ? "Added by Admin" : "Self-registered"}</span><Status value={application?.status}/></div><p className="mt-2 text-stone-600">{profile?.instituteName || "Not provided"}{profile?.program ? ` · ${profile.program}` : ""}</p><p className="mt-1 text-xs text-stone-500">Last updated {new Date(profile?.updatedAt ?? user?.updatedAt ?? Date.now()).toLocaleString()}</p></div>
     </header>
 
     <div className="mt-6 grid gap-5 md:grid-cols-2">{sections.map(section => <section key={section.title} className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6"><h2 className="font-display text-xl font-semibold">{section.title}</h2><dl className="mt-4 grid gap-3 sm:grid-cols-2">{section.fields.map(([label, value]) => <Field key={label} label={label} value={value}/>)}</dl></section>)}</div>

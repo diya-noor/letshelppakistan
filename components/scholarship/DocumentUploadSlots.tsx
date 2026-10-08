@@ -6,12 +6,10 @@ import { useEffect, useState } from "react";
 
 const slotDefinitions = [
   { type: "profilePhoto", label: "Profile photo", imageOnly: true },
-  { type: "cnicFront", label: "CNIC / B-Form (front)" },
-  { type: "cnicBack", label: "CNIC / B-Form (back)" },
+  { type: "cnicFront", label: "CNIC / B-Form" },
+  { type: "incomeCertificate", label: "Income certificate" },
+  { type: "bankProof", label: "Bank details" },
   { type: "resultCard", label: "Result card" },
-  { type: "feeVoucher", label: "Fee voucher" },
-  { type: "bankProof", label: "Bank proof (cheque / account title)" },
-  { type: "guardianCnic", label: "Guardian CNIC" },
   { type: "other", label: "Other documents", multiple: true },
 ] as const;
 
@@ -38,6 +36,7 @@ export function DocumentUploadSlots({
   onChange: (type: DocumentSlot, files: File[]) => void;
   disabled?: boolean;
 }) {
+  const [validation, setValidation] = useState<Record<string, string>>({});
   return <div className="grid gap-3 sm:grid-cols-2">{documentSlots.map(slot => {
     const selected = selectedFiles[slot.type] ?? [];
     const existing = documents.filter(document => isInSlot(document.type, slot.type));
@@ -48,11 +47,15 @@ export function DocumentUploadSlots({
         {existing.map(document => <ExistingFile key={document._id} document={document}/>) }
         {!selected.length && !existing.length && <p className="text-xs text-stone-500">Not uploaded</p>}
       </div>
+      {validation[slot.type] && <p role="alert" className="mt-2 text-xs text-red-700">{validation[slot.type]}</p>}
       <label className={`mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-stone-100 px-3 py-2 text-xs font-semibold ${disabled ? "pointer-events-none opacity-50" : ""}`}>
         {slot.imageOnly ? <ImagePlus size={15}/> : <FileText size={15}/>} {slot.multiple ? "Choose files" : selected.length || existing.length ? "Replace file" : "Choose file"}
         <input hidden type="file" multiple={slot.multiple} disabled={disabled} accept={slot.imageOnly ? "image/jpeg,image/png,image/webp" : ".pdf,image/jpeg,image/png,image/webp"} onChange={event => {
           const files = Array.from(event.currentTarget.files ?? []);
           event.currentTarget.value = "";
+          const invalid = files.find(file => file.size > 5 * 1024 * 1024 || (!slot.imageOnly && !["application/pdf", "image/jpeg", "image/png", "image/webp"].includes(file.type)) || (slot.imageOnly && !file.type.startsWith("image/")));
+          if (invalid) { setValidation(current => ({ ...current, [slot.type]: invalid.size > 5 * 1024 * 1024 ? `${invalid.name} exceeds 5 MB.` : "Use PDF, JPG, PNG or WEBP files; profile photos must be images." })); return; }
+          setValidation(current => ({ ...current, [slot.type]: "" }));
           if (files.length) onChange(slot.type, slot.multiple ? [...selected, ...files] : [files[0]]);
         }}/>
       </label>
@@ -68,14 +71,14 @@ function isInSlot(type: string, slot: DocumentSlot) {
     cnicFront: ["cnic"],
     resultCard: ["result"],
     bankProof: ["bank_details"],
-    other: ["income_certificate"],
+    incomeCertificate: ["income_certificate"],
   };
   return legacy[slot]?.includes(type) ?? false;
 }
 
 export function existingDocumentForSlot<T extends { type: string }>(documents: T[], slot: DocumentSlot) {
   const replaceableLegacy: Partial<Record<DocumentSlot, string[]>> = {
-    profilePhoto: ["photo"], cnicFront: ["cnic"], bankProof: ["bank_details"], other: ["income_certificate"],
+    profilePhoto: ["photo"], cnicFront: ["cnic"], bankProof: ["bank_details"], incomeCertificate: ["income_certificate"],
   };
   return documents.find(document => document.type === slot) ?? documents.find(document => replaceableLegacy[slot]?.includes(document.type));
 }

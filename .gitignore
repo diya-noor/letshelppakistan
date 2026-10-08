@@ -19,6 +19,7 @@ dist/
 # Debug
 npm-debug.log*
 .dev-server*.log
+.convex-dev*.log
 
 # Temp / testing
 screenshots/

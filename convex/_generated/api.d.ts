@@ -9,10 +9,12 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as adminAccess from "../adminAccess.js";
 import type * as auth from "../auth.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as notifications from "../notifications.js";
+import type * as profileUtils from "../profileUtils.js";
 import type * as student from "../student.js";
 import type * as students from "../students.js";
 import type * as users from "../users.js";
@@ -25,10 +27,12 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  adminAccess: typeof adminAccess;
   auth: typeof auth;
   helpers: typeof helpers;
   http: typeof http;
   notifications: typeof notifications;
+  profileUtils: typeof profileUtils;
   student: typeof student;
   students: typeof students;
   users: typeof users;

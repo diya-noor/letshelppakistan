@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query, type MutationCtx } from "./_generated/server";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { clean, isAdmin, requireAdmin, requireAppUser } from "./helpers";
 import { persistStudentProfile } from "./profileUtils";
 const appStatus = v.union(v.literal("pending"),v.literal("under_review"),v.literal("approved"),v.literal("rejected"));
@@ -9,7 +9,7 @@ const allowedMime = new Set(["application/pdf", "image/jpeg", "image/png", "imag
 const optionalText = (value: string | undefined) => value?.trim() || undefined;
 const optionalPhone = (value: string | undefined) => { const raw=optionalText(value); if(!raw)return undefined; const compact=raw.replace(/[\s()-]/g,""); if(!/^(?:\+92|92|0)3\d{9}$/.test(compact))throw new Error("Enter a valid Pakistani phone number"); return compact.startsWith("+92")?compact:compact.startsWith("92")?`+${compact}`:`+92${compact.slice(1)}`; };
 async function touchStudent(ctx: MutationCtx, studentId: Id<"appUsers">, now: number) { await ctx.db.patch(studentId,{updatedAt:now}); const profile=await ctx.db.query("studentProfiles").withIndex("by_userId",q=>q.eq("userId",studentId)).unique(); if(profile)await ctx.db.patch(profile._id,{updatedAt:now}); }
-export const dashboard = query({ args: {}, returns: v.any(), handler: async ctx => { await requireAdmin(ctx); const students = await ctx.db.query("appUsers").withIndex("by_role",q=>q.eq("role","student")).take(5000); const pending = await ctx.db.query("applications").withIndex("by_status",q=>q.eq("status","pending")).take(5000); const approved = await ctx.db.query("applications").withIndex("by_status",q=>q.eq("status","approved")).take(5000); const rejected = await ctx.db.query("applications").withIndex("by_status",q=>q.eq("status","rejected")).take(5000); const paid = await ctx.db.query("terms").withIndex("by_paymentStatus",q=>q.eq("paymentStatus","paid")).take(5000); const partial = await ctx.db.query("terms").withIndex("by_paymentStatus",q=>q.eq("paymentStatus","partial")).take(5000); const pendingPayments = await ctx.db.query("terms").withIndex("by_paymentStatus",q=>q.eq("paymentStatus","pending")).take(5000); return { totalStudents: students.length, pendingApplications: pending.length, approved: approved.length, rejected: rejected.length, totalDisbursed: [...paid,...partial].reduce((sum,t)=>sum+t.amountPaid,0), pendingPayments: pendingPayments.length + partial.length }; } });
+export const dashboard = query({ args: {}, returns: v.any(), handler: async ctx => { await requireAdmin(ctx); const students = await ctx.db.query("studentProfiles").take(5000); const pending = await ctx.db.query("applications").withIndex("by_status",q=>q.eq("status","pending")).take(5000); const approved = await ctx.db.query("applications").withIndex("by_status",q=>q.eq("status","approved")).take(5000); const rejected = await ctx.db.query("applications").withIndex("by_status",q=>q.eq("status","rejected")).take(5000); const paid = await ctx.db.query("terms").withIndex("by_paymentStatus",q=>q.eq("paymentStatus","paid")).take(5000); const partial = await ctx.db.query("terms").withIndex("by_paymentStatus",q=>q.eq("paymentStatus","partial")).take(5000); const pendingPayments = await ctx.db.query("terms").withIndex("by_paymentStatus",q=>q.eq("paymentStatus","pending")).take(5000); return { totalStudents: students.length, pendingApplications: pending.length, approved: approved.length, rejected: rejected.length, totalDisbursed: [...paid,...partial].reduce((sum,t)=>sum+t.amountPaid,0), pendingPayments: pendingPayments.length + partial.length }; } });
 export const listStudents = query({ args: { status: v.optional(appStatus), institute: v.optional(v.string()), program: v.optional(v.string()), payment: v.optional(paymentStatus) }, returns: v.any(), handler: async (ctx,args) => { await requireAdmin(ctx); const profiles = args.institute ? await ctx.db.query("studentProfiles").withIndex("by_instituteName",q=>q.eq("instituteName",args.institute!)).take(500) : args.program ? await ctx.db.query("studentProfiles").withIndex("by_program",q=>q.eq("program",args.program!)).take(500) : await ctx.db.query("studentProfiles").take(500); const rows = await Promise.all(profiles.map(async profile => { const application = await ctx.db.query("applications").withIndex("by_studentId",q=>q.eq("studentId",profile.userId)).unique(); const terms = await ctx.db.query("terms").withIndex("by_studentId",q=>q.eq("studentId",profile.userId)).order("desc").take(100); const legacyPhotos = profile.profileImageId ? [] : await ctx.db.query("documents").withIndex("by_studentId",q=>q.eq("studentId",profile.userId)).collect(); const legacyPhoto = legacyPhotos.filter(d=>["profilePhoto","photo"].includes(d.type) && d.mimeType.startsWith("image/")).sort((a,b)=>b.uploadedAt-a.uploadedAt)[0]; const profilePhotoUrl = profile.profileImageId ? await ctx.storage.getUrl(profile.profileImageId) : legacyPhoto ? await ctx.storage.getUrl(legacyPhoto.storageId) : null; return { profile, profilePhotoUrl, application, latestPaymentStatus: terms[0]?.paymentStatus ?? null, termsCount: terms.length }; })); return rows.filter(row => (!args.status || row.application?.status === args.status) && (!args.payment || row.latestPaymentStatus === args.payment)); } });
 export const getStudent = query({ args: { studentId: v.id("appUsers") }, returns: v.any(), handler: async (ctx,args) => { await requireAdmin(ctx); const user = await ctx.db.get(args.studentId); if (!user || user.role !== "student") throw new Error("Student not found"); const profile = await ctx.db.query("studentProfiles").withIndex("by_userId",q=>q.eq("userId",args.studentId)).unique(); const application = await ctx.db.query("applications").withIndex("by_studentId",q=>q.eq("studentId",args.studentId)).unique(); const docs = await ctx.db.query("documents").withIndex("by_studentId",q=>q.eq("studentId",args.studentId)).collect(); const terms = await ctx.db.query("terms").withIndex("by_studentId",q=>q.eq("studentId",args.studentId)).order("desc").take(100); const hydratedDocs = await Promise.all(docs.map(async d=>({...d,url:await ctx.storage.getUrl(d.storageId)}))); const profilePhotoUrl = profile?.profileImageId ? await ctx.storage.getUrl(profile.profileImageId) : hydratedDocs.find(d=>["profilePhoto","photo"].includes(d.type) && d.mimeType.startsWith("image/"))?.url ?? null; return { user, profile, profilePhotoUrl, application, documents: hydratedDocs, terms: await Promise.all(terms.map(async t=>({...t,resultUrl:t.resultStorageId?await ctx.storage.getUrl(t.resultStorageId):null}))) }; } });
 export const saveStudentProfile = mutation({
@@ -41,6 +41,56 @@ export const saveStudentProfile = mutation({
       studentId = await ctx.db.insert("appUsers", { role: "student", accountType: "admin_added", createdAt: now, updatedAt: now });
     }
     return await persistStudentProfile(ctx, studentId, args);
+  },
+});
+export const deleteStudent = mutation({
+  args: { studentId: v.id("appUsers") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const user = await ctx.db.get(args.studentId);
+    if (!user || user.role !== "student") throw new Error("Student not found");
+
+    const profile = await ctx.db.query("studentProfiles").withIndex("by_userId", q => q.eq("userId", args.studentId)).unique();
+    const documents = await ctx.db.query("documents").withIndex("by_studentId", q => q.eq("studentId", args.studentId)).collect();
+    const terms = await ctx.db.query("terms").withIndex("by_studentId", q => q.eq("studentId", args.studentId)).collect();
+    const applications = await ctx.db.query("applications").withIndex("by_studentId", q => q.eq("studentId", args.studentId)).collect();
+    const notifications = await ctx.db.query("notifications").withIndex("by_userId", q => q.eq("userId", args.studentId)).collect();
+
+    // The legacy `students` table has no appUsers/studentId field. Only remove a
+    // uniquely identifiable row with an exact name + phone match.
+    let legacyStudent: Doc<"students"> | undefined;
+    if (profile?.contactNumber) {
+      const normalizePhone = (phone: string) => phone.replace(/\D/g, "").slice(-10);
+      const normalizedName = profile.fullName.trim().toLocaleLowerCase();
+      const legacyRows = await ctx.db.query("students").collect();
+      const matches = legacyRows.filter(row =>
+        row.name.trim().toLocaleLowerCase() === normalizedName &&
+        !!row.phone && normalizePhone(row.phone) === normalizePhone(profile.contactNumber!),
+      );
+      if (matches.length > 1) throw new Error("Multiple legacy student records match this name and phone. Resolve the duplicate records before deleting.");
+      legacyStudent = matches[0];
+    }
+
+    const storageIds = new Set<Id<"_storage">>();
+    if (profile?.profileImageId) storageIds.add(profile.profileImageId);
+    for (const document of documents) storageIds.add(document.storageId);
+    for (const term of terms) if (term.resultStorageId) storageIds.add(term.resultStorageId);
+    if (legacyStudent?.fatherCnicFile) storageIds.add(legacyStudent.fatherCnicFile);
+    if (legacyStudent?.resultCardFile) storageIds.add(legacyStudent.resultCardFile);
+    for (const storageId of legacyStudent?.otherDocuments ?? []) storageIds.add(storageId);
+
+    for (const document of documents) await ctx.db.delete(document._id);
+    for (const term of terms) await ctx.db.delete(term._id);
+    for (const application of applications) await ctx.db.delete(application._id);
+    for (const notification of notifications) await ctx.db.delete(notification._id);
+    if (profile) await ctx.db.delete(profile._id);
+    if (legacyStudent) await ctx.db.delete(legacyStudent._id);
+    for (const storageId of storageIds) await ctx.storage.delete(storageId);
+
+    // Preserve login identity/auth records. Admin-added records have no auth user.
+    if (!user.authUserId) await ctx.db.delete(user._id);
+    return null;
   },
 });
 export const saveTermResult = mutation({args:{termId:v.id("terms"),storageId:v.id("_storage"),fileName:v.string()},returns:v.null(),handler:async(ctx,args)=>{await requireAdmin(ctx);const term=await ctx.db.get(args.termId);if(!term)throw new Error("Term not found");const stored=await ctx.db.system.get(args.storageId);if(!stored||!stored.contentType||!allowedMime.has(stored.contentType)||stored.size>5*1024*1024)throw new Error("Only PDF/JPG/PNG/WEBP files up to 5 MB are allowed");const now=Date.now();if(term.resultStorageId)await ctx.storage.delete(term.resultStorageId);const oldDocs=await ctx.db.query("documents").withIndex("by_termId",q=>q.eq("termId",term._id)).take(10);for(const doc of oldDocs)await ctx.db.delete(doc._id);await ctx.db.patch(term._id,{resultStorageId:args.storageId,resultFileName:clean(args.fileName,"File name",180),updatedAt:now});await ctx.db.insert("documents",{studentId:term.studentId,type:"result",storageId:args.storageId,fileName:clean(args.fileName,"File name",180),mimeType:stored.contentType,size:stored.size,termId:term._id,uploadedAt:now});await touchStudent(ctx,term.studentId,now);return null;}});

@@ -2,12 +2,14 @@
 
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { FileText, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Component, type ErrorInfo, type ReactNode, useState } from "react";
+import { Component, type ReactNode, useState } from "react";
 import { DocumentUploadSlots, existingDocumentForSlot, type DocumentSlot, type SelectedSlotFiles } from "@/components/scholarship/DocumentUploadSlots";
+
+type ProfileDocument = Doc<"documents"> & { url: string | null };
 
 const groups = [
   { title: "Profile Photo", categories: [{ label: "Photo", types: ["profilePhoto", "photo"] }] },
@@ -90,12 +92,12 @@ function StudentProfileContent() {
     <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-display text-2xl font-semibold">Documents</h2>{me.role === "admin" && <button type="button" onClick={() => { setEditMode(value => !value); setFiles({}); setMessage(""); }} className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-semibold">{editMode ? "Cancel editing" : "Edit documents"}</button>}</div>
       {message && <p role="status" className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-stone-700">{message}</p>}
-      {editMode && me.role === "admin" ? <div className="mt-5"><DocumentUploadSlots selectedFiles={files} documents={documents} onChange={(type, selected) => setFiles(current => ({ ...current, [type]: selected }))} disabled={saving}/><button type="button" disabled={saving} onClick={() => void saveFiles()} className="mt-4 rounded-xl bg-red-600 px-5 py-3 font-semibold text-white disabled:opacity-50">{saving ? "Uploading…" : "Save documents"}</button></div> : documents.length === 0 ? <p className="mt-4 rounded-xl bg-stone-50 p-5 text-sm text-stone-500">No documents uploaded.</p> : <div className="mt-5 grid gap-4 sm:grid-cols-2">{groups.map(group => <section key={group.title} className="rounded-xl border border-stone-200 p-4"><h3 className="font-semibold">{group.title}</h3><div className="mt-3 space-y-3">{group.categories.map(category => { const matching = documents.filter((doc: any) => category.types.includes(doc.type)); return <div key={category.label} className="border-t border-stone-100 pt-3"><p className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">{category.label}</p>{matching.length ? matching.map((doc: any) => <DocumentItem key={doc._id} document={doc}/>) : <p className="text-sm text-stone-500">Not uploaded</p>}</div>; })}</div></section>)}</div>}
+      {editMode && me.role === "admin" ? <div className="mt-5"><DocumentUploadSlots selectedFiles={files} documents={documents} onChange={(type, selected) => setFiles(current => ({ ...current, [type]: selected }))} disabled={saving}/><button type="button" disabled={saving} onClick={() => void saveFiles()} className="mt-4 rounded-xl bg-red-600 px-5 py-3 font-semibold text-white disabled:opacity-50">{saving ? "Uploading…" : "Save documents"}</button></div> : documents.length === 0 ? <p className="mt-4 rounded-xl bg-stone-50 p-5 text-sm text-stone-500">No documents uploaded.</p> : <div className="mt-5 grid gap-4 sm:grid-cols-2">{groups.map(group => <section key={group.title} className="rounded-xl border border-stone-200 p-4"><h3 className="font-semibold">{group.title}</h3><div className="mt-3 space-y-3">{group.categories.map(category => { const matching = documents.filter((doc: ProfileDocument) => category.types.includes(doc.type)); return <div key={category.label} className="border-t border-stone-100 pt-3"><p className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-500">{category.label}</p>{matching.length ? matching.map((doc: ProfileDocument) => <DocumentItem key={doc._id} document={doc}/>) : <p className="text-sm text-stone-500">Not uploaded</p>}</div>; })}</div></section>)}</div>}
     </section>
   </div></main>;
 }
 
-function DocumentItem({ document }: { document: any }) {
+function DocumentItem({ document }: { document: ProfileDocument }) {
   return <div className="mb-3 flex min-w-0 items-center gap-3 last:mb-0">{document.url && document.mimeType.startsWith("image/") ? <a href={document.url} target="_blank" rel="noreferrer" className="shrink-0"><img src={document.url} alt={document.fileName} className="h-14 w-14 rounded-lg border object-cover"/></a> : <FileText className="shrink-0 text-red-600" size={22}/>}<div className="min-w-0 flex-1"><p className="truncate text-sm font-medium" title={document.fileName}>{document.fileName}</p><p className="text-xs text-stone-500">Uploaded {new Date(document.uploadedAt).toLocaleDateString()}</p><div className="mt-1 flex gap-3">{document.url && <a href={document.url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-red-700">View / Download</a>}{document.url && document.mimeType.startsWith("image/") && <a href={document.url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-stone-600">Preview</a>}</div></div></div>;
 }
 
@@ -114,6 +116,6 @@ function State({ children }: { children: React.ReactNode }) {
 class ProfileErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
   static getDerivedStateFromError() { return { hasError: true }; }
-  componentDidCatch(error: Error, _info: ErrorInfo) { console.error("Student profile failed to load", error); }
+  componentDidCatch(error: Error) { console.error("Student profile failed to load", error); }
   render() { return this.state.hasError ? <State>Unable to load this profile. Check your access or try again later.</State> : this.props.children; }
 }
